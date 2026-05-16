@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHP Data Types & Syntax</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #0f172a;
+            color: #f1f5f9;
+        }
+        header {
+            background: #1e293b;
+            padding: 20px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            color: #38bdf8;
+        }
+        section {
+            padding: 30px;
+            max-width: 900px;
+            margin: auto;
+        }
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        h2 {
+            color: #22c55e;
+        } 
+        h3 {Color:  #66ed98;
+           
+        }
+        code {
+            background: #020617;
+            padding: 10px;
+            display: block;
+            border-radius: 8px;
+            margin-top: 10px;
+            color: #38bdf8;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #1e293b;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>PHP Data Types & Syntax</h1>
+    <p>Learn the basics of PHP programming</p>
+</header>
+
+<section>
+
+    <div class="card">
+        <h2>🔹តើ Data type នៅក្នុង PHP មានអ្វីខ្លះ?</h2>
+        <p></p>
+    </div>
+
+    <div class="card">
+ 
+
+    <div class="card">
+        <h2>🔹 PHP Data Types</h2>
+
+        <?php
+            $string = "Hello";
+            $integer = 100;
+            $float = 10.5;
+            $boolean = true;
+
+            
+            $array = ["Apple", "Banana", "Mango"];
+        ?>
+    <h3>🔹 ក្រុមទី១៖ Scalar Data Types</h3>
+        <p><b>String: អក្សរ ឬពាក្យ</b> <?php echo $string; ?></p>
+        <p><b>Integer: លេខគត់</b> <?php echo $integer; ?></p>
+        <p><b>Float: លេខទសភាគ</b> <?php echo $float; ?></p>
+        <p><b>Boolean: តម្លៃពិត (true) ឬ មិនពិត (false)
+     <h3>🔹 ក្រុមទី២៖ Scalar Data Types</h3>
+        </b> <?php echo $boolean ? "true" : "false"; ?></p>
+        <p><b>Array: ផ្ទុកទិន្នន័យច្រើនក្នុងអថេរតែមួយ</b> <?php echo implode(", ", $array); ?></p>
+
+        <code>
+&lt;?php
+$string = "Hello";<p></p>
+$integer = 100;<p></p>
+$float = 10.5;<p></p>
+$boolean = true;<p></p>
+$array = ["Apple", "Banana", "Mango"];
+?&gt;<p></p>
+        </code>
+    </div>
+
+    <div class="card">
+        <h2>🔹 Conditional Statement</h2>
+
+        <?php
+            $age = 18;
+            if ($age >= 18) {
+                echo "<p>You are an adult.</p>";
+            } else {
+                echo "<p>You are under 18.</p>";
+            }
+        ?>
+
+        <code>
+&lt;?php
+if ($age >= 18) {
+    echo "Adult";
+} else {
+    echo "Minor";
+}
+?&gt;
+        </code>
+    </div>
+
+    <div class="card">
+        <h2>🔹 Loop Example</h2>
+
+        <?php
+            echo "<ul>";
+            for ($i = 1; $i <= 5; $i++) {
+                echo "<li>Number $i</li>";
+            }
+            echo "</ul>";
+        ?>
+
+        <code>
+&lt;?php
+for ($i = 1; $i <= 5; $i++) {
+    echo $i;
+}
+?&gt;
+        </code>
+    </div>
+
+</section>
+
+<footer>
+    <p>© 2026 PHP Learning Website</p>
+</footer>
+
+</body>
+</html>

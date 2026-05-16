@@ -1,0 +1,456 @@
+<?php
+$old_reading = '';
+$new_reading = '';
+$rate = 620;
+$units = null;
+$total = null;
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $old_reading = $_POST['old_reading'] ?? '';
+    $new_reading = $_POST['new_reading'] ?? '';
+    $rate = floatval($_POST['rate'] ?? 620);
+
+    if ($old_reading !== '' && $new_reading !== '') {
+        $old = floatval($old_reading);
+        $new = floatval($new_reading);
+
+        if ($new < $old) {
+            $error = 'លេខម៉ែត្រថ្មីត្រូវតែធំជាងលេខម៉ែត្រចាស់។';
+        } else {
+            $units = $new - $old;
+            $total = $units * $rate;
+        }
+    }
+}
+
+function fmt_kh($n) {
+    return number_format($n, 0, '.', ',');
+}
+?>
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>គណនាតម្លៃអគ្គិសនី</title>
+<link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --card: #21242f;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.18);
+    --text: #f0f0f4;
+    --muted: #8b8fa8;
+    --hint: #555870;
+    --accent: #f5c518;
+    --accent-dim: rgba(245,197,24,0.12);
+    --danger: #ff6b6b;
+    --danger-bg: rgba(255,107,107,0.1);
+    --success: #4ade80;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Hanuman', serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  .page-wrap {
+    width: 100%;
+    max-width: 520px;
+  }
+
+  .header {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .header-icon {
+    width: 52px;
+    height: 52px;
+    background: var(--accent-dim);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 24px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .header p {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--hint);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field label {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .input-wrap {
+    position: relative;
+  }
+
+  .input-wrap input {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 52px 12px 14px;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: 'Hanuman', serif;
+    color: var(--text);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -moz-appearance: textfield;
+  }
+
+  .input-wrap input::-webkit-outer-spin-button,
+  .input-wrap input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+
+  .input-wrap input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(245,197,24,0.12);
+  }
+
+  .input-unit {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    color: var(--hint);
+    pointer-events: none;
+  }
+
+  .rate-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .rate-field label {
+    font-size: 13px;
+    color: var(--muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .rate-field .input-wrap {
+    flex: 1;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1.5rem 0;
+  }
+
+  .error-box {
+    background: var(--danger-bg);
+    border: 1px solid rgba(255,107,107,0.25);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13px;
+    color: var(--danger);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .metric {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 12px;
+    text-align: center;
+  }
+
+  .metric-label {
+    font-size: 11px;
+    color: var(--hint);
+    margin-bottom: 8px;
+  }
+
+  .metric-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+    word-break: break-all;
+  }
+
+  .metric-unit {
+    font-size: 10px;
+    color: var(--hint);
+  }
+
+  .total-card {
+    background: var(--accent-dim);
+    border: 1px solid rgba(245,197,24,0.25);
+    border-radius: 14px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .total-label {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .total-amount {
+    font-size: 38px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    word-break: break-all;
+  }
+
+  .total-currency {
+    font-size: 13px;
+    color: var(--muted);
+    text-align: right;
+    flex-shrink: 0;
+    margin-left: 12px;
+  }
+
+  .dash {
+    font-size: 38px;
+    font-weight: 700;
+    color: var(--hint);
+    line-height: 1;
+  }
+
+  .submit-btn {
+    width: 100%;
+    background: var(--accent);
+    color: #111;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Hanuman', serif;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    margin-top: 1.25rem;
+  }
+
+  .submit-btn:hover { opacity: 0.9; }
+  .submit-btn:active { transform: scale(0.98); }
+
+  .reset-link {
+    display: block;
+    text-align: center;
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .reset-link:hover { color: var(--text); }
+
+  .formula-note {
+    font-size: 12px;
+    color: var(--hint);
+    text-align: center;
+    margin-top: 1.5rem;
+  }
+
+  @media (max-width: 400px) {
+    .field-row { grid-template-columns: 1fr; }
+    .metrics-grid { grid-template-columns: 1fr 1fr; }
+    .total-amount, .dash { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <div class="header">
+    <div class="header-icon">⚡</div>
+    <h1>គណនាតម្លៃអគ្គិសនី</h1>
+    <p>បញ្ចូលលេខម៉ែត្រ ដើម្បីគណនាថ្លៃអគ្គិសនី</p>
+  </div>
+
+  <div class="card">
+    <p class="section-label">ព័ត៌មានម៉ែត្រ</p>
+
+    <form method="POST" action="">
+
+      <div class="field-row">
+        <div class="field">
+          <label for="old_reading">លេខម៉ែត្រចាស់</label>
+          <div class="input-wrap">
+            <input
+              type="number"
+              id="old_reading"
+              name="old_reading"
+              placeholder="0"
+              min="0"
+              step="0.01"
+              value="<?= htmlspecialchars($old_reading) ?>"
+            >
+            <span class="input-unit">kWh</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="new_reading">លេខម៉ែត្រថ្មី</label>
+          <div class="input-wrap">
+            <input
+              type="number"
+              id="new_reading"
+              name="new_reading"
+              placeholder="0"
+              min="0"
+              step="0.01"
+              value="<?= htmlspecialchars($new_reading) ?>"
+            >
+            <span class="input-unit">kWh</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="rate-field">
+        <label for="rate">តម្លៃ / kWh</label>
+        <div class="input-wrap">
+          <input
+            type="number"
+            id="rate"
+            name="rate"
+            placeholder="620"
+            min="0"
+            step="1"
+            value="<?= htmlspecialchars($rate) ?>"
+          >
+          <span class="input-unit">រៀល</span>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">គណនា</button>
+
+    </form>
+
+    <?php if ($old_reading !== '' || $new_reading !== ''): ?>
+      <a href="?" class="reset-link">សម្អាតទិន្នន័យ ↺</a>
+    <?php endif; ?>
+  </div>
+
+  <?php if ($error): ?>
+    <div class="error-box">
+      ⚠ <?= htmlspecialchars($error) ?>
+    </div>
+  <?php endif; ?>
+
+  <div class="card">
+    <p class="section-label">លទ្ធផលគណនា</p>
+
+    <div class="divider" style="margin-top:0;"></div>
+
+    <div class="metrics-grid">
+      <div class="metric">
+        <p class="metric-label">អង្គភាពប្រើ</p>
+        <p class="metric-value"><?= $units !== null ? number_format($units, 2) : '—' ?></p>
+        <p class="metric-unit">kWh</p>
+      </div>
+      <div class="metric">
+        <p class="metric-label">តម្លៃ / kWh</p>
+        <p class="metric-value"><?= fmt_kh($rate) ?></p>
+        <p class="metric-unit">រៀល</p>
+      </div>
+      <div class="metric">
+        <p class="metric-label">ចាស់ → ថ្មី</p>
+        <p class="metric-value" style="font-size:13px;line-height:1.6;">
+          <?php if ($units !== null): ?>
+            <?= htmlspecialchars(floatval($old_reading)) ?> → <?= htmlspecialchars(floatval($new_reading)) ?>
+          <?php else: ?>
+            —
+          <?php endif; ?>
+        </p>
+        <p class="metric-unit">ម៉ែត្រ</p>
+      </div>
+    </div>
+
+    <div class="total-card">
+      <div>
+        <p class="total-label">សរុបទឹកប្រាក់</p>
+        <?php if ($total !== null): ?>
+          <p class="total-amount"><?= fmt_kh($total) ?></p>
+        <?php else: ?>
+          <p class="dash">—</p>
+        <?php endif; ?>
+      </div>
+      <span class="total-currency">រៀល (រ)</span>
+    </div>
+  </div>
+
+  <p class="formula-note">រូបមន្ត៖ (ម៉ែត្រថ្មី − ម៉ែត្រចាស់) × តម្លៃក្នុង kWh = សរុប</p>
+
+</div>
+
+</body>
+</html>
